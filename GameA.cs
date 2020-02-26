@@ -49,7 +49,12 @@ namespace SpaceFlex
                                             verts.Length, BufferUsage.None);
             vertexBuffer.SetData(verts);
             // Initialize the BasicEffect 
-            effect = new BasicEffect(GraphicsDevice); 
+            effect = new BasicEffect(GraphicsDevice);
+
+            // Set cullmode to none (Usually should not be set to none, only for debugging)
+            RasterizerState rs = new RasterizerState(); 
+            rs.CullMode = CullMode.None; 
+            GraphicsDevice.RasterizerState = rs; 
         }
 
         protected override void Update(GameTime gameTime)
