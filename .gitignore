@@ -1,4 +1,5 @@
-# .NET Core build folders
+*.sln
 /bin
 /obj
 /.vs
+/.git
