@@ -15,7 +15,8 @@ namespace SpaceFlex
         VertexPositionColor[] verts; 
         VertexBuffer vertexBuffer;
         BasicEffect effect;
-        Matrix world = Matrix.Identity;
+        Matrix worldTranslation = Matrix.Identity;
+        Matrix worldRotation = Matrix.Identity;
         public GameA()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -24,7 +25,7 @@ namespace SpaceFlex
         }
 
         protected override void Initialize()
-        {            
+        {
             // Initialize camera 
             camera = new Camera(this, new Vector3(0, 0, 5),   
                                 Vector3.Zero, 
@@ -39,10 +40,13 @@ namespace SpaceFlex
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Initialize vertices 
-            verts = new VertexPositionColor[3]; 
-            verts[0] = new VertexPositionColor(new Vector3(0, 1, 0), Color.Blue); 
+            verts = new VertexPositionColor[6]; 
+            verts[0] = new VertexPositionColor(new Vector3(1, 1, 0), Color.Blue); 
             verts[1] = new VertexPositionColor(new Vector3(1, -1, 0), Color.Red);
             verts[2] = new VertexPositionColor(new Vector3(-1, -1, 0), Color.Green);
+            verts[3] = new VertexPositionColor(new Vector3(-1, -1, 0), Color.Yellow);
+            verts[4] = new VertexPositionColor(new Vector3(-1, 1, 0), Color.Yellow);
+            verts[5] = new VertexPositionColor(new Vector3(1, 1, 0), Color.Yellow);
 
             // Set vertex data in VertexBuffer 
             vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor),
@@ -63,14 +67,14 @@ namespace SpaceFlex
                 Exit();
 
             // Translation
-            KeyboardState keyboardState = Keyboard.GetState(  ); 
+            KeyboardState keyboardState = Keyboard.GetState(); 
             if (keyboardState.IsKeyDown(Keys.Left))   
-                world *= Matrix.CreateTranslation(-.01f, 0, 0);
-            if (keyboardState.IsKeyDown(Keys.Right))    
-                world *= Matrix.CreateTranslation(.01f, 0, 0);
+                worldTranslation *= Matrix.CreateTranslation(-.01f, 0, 0);
+            if (keyboardState.IsKeyDown(Keys.Right))
+                worldTranslation *= Matrix.CreateTranslation(.01f, 0, 0);
 
             // Rotation 
-            world *= Matrix.CreateRotationY(MathHelper.PiOver4 / 60); 
+            worldRotation *= Matrix.CreateRotationY(MathHelper.PiOver4 / 60); 
 
             //Note! world *= is done to keep the translation that is done before, if you use just world=, you will lose it
             base.Update(gameTime);
@@ -84,7 +88,7 @@ namespace SpaceFlex
             GraphicsDevice.SetVertexBuffer(vertexBuffer);
 
             //Set object and camera info 
-            effect.World = world; 
+            effect.World = Matrix.CreateScale(.5f) * worldRotation * worldTranslation; 
             effect.View = camera.view; 
             effect.Projection = camera.projection;
             effect.VertexColorEnabled = true;
@@ -92,7 +96,7 @@ namespace SpaceFlex
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, verts, 0, 1);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, verts, 0, 2);
             }
             base.Draw(gameTime);
         }
