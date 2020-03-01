@@ -7,7 +7,7 @@ namespace SpaceFlex
         [STAThread]
         static void Main()
         {
-            using (var game = new GameA())
+            using (var game = new PongGame())
                 game.Run();
         }
     }
